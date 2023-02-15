@@ -1,0 +1,46 @@
+name: Release
+
+on:
+    push:
+      tags:
+        - '*'
+    workflow_dispatch:
+        inputs:
+            branch:
+                type: string
+                description: Brnach
+                default: develop
+            environment:
+                type: environment
+                description: Environment to deploy selected services/lambdas
+                default: develop
+            service:
+                type: string
+                description: Services that should be updated. Separated by comma (,)
+                default: webservices,backoffice,backofficeapi,queue-worker
+            lambda:
+                type: string
+                description: Lambdas that should be updated. Separated by comma (,)
+                default: sie4,ssp,gbat10,xero,garbageCollector,exchangeRateUpdater,automaticImport
+
+jobs:
+    release:
+        name: Release ${{ github.event.inputs.version }} version
+        runs-on: ubuntu-latest
+        timeout-minutes: 1
+
+        environment:
+          name: ${{ inputs.environment }}
+
+        steps:
+            -
+                name: Testing
+                run: | 
+                  echo ${{ vars.AWS_CLUSTER_NAME }}
+                  echo ${{ inputs.version }} 
+                  echo ${{ inputs.service }}
+                  echo ${{ github.ref }}
+                  echo ${{ github.ref_name }}
+
+
+        # if: contains(fromJson('["develop", "test"]'), github.ref_name) || startsWith(github.ref, 'refs/tags')
