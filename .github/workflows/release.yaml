@@ -1,0 +1,36 @@
+name: Release
+
+on:
+    push:
+      tags:
+        - '*'
+    workflow_dispatch:
+        inputs:
+            version:
+                type: string
+                description: Version to be released
+                required: true
+            service:
+                type: string
+                description: Services/lambdas that should be updated. Separated by comma (,)
+                default: webservices,backoffice,queue-worker
+            environment:
+                type: environment
+                default: develop
+
+jobs:
+    release:
+        name: Release ${{ github.event.inputs.version }} version
+        runs-on: ubuntu-latest
+        timeout-minutes: 1
+
+        environment:
+          name: ${{ inputs.environment }}
+          
+        steps:
+            -
+                name: Testing
+                run: | 
+                  echo ${{ vars.AWS_CLUSTER_NAME }}
+                  echo ${{ inputs.version }} 
+                  echo ${{ inputs.service }}
